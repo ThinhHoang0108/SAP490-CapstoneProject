@@ -31,6 +31,7 @@ SAP490-CapstoneProject/
 │── workflow/            # SAP Workflow for PO approval (2-level)
 │── gr_report/           # GR Report using OLE Object (Excel output)
 │── po_form/             # PO Form using SmartForms (PDF output)
+│── src/                 # source code
 │── docs/                # Documentation, functional specs, and test cases
 │── README.md            # Project overview and setup guide
 ```
