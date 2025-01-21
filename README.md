@@ -64,15 +64,15 @@ SAP490-CapstoneProject/
 ## **🖼️ Preview Screenshots**  
 
 <div align="center">
-<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/workflow/sap%20workflow%202.jpg" alt="SAP Workflow Approval Process" width="45%"></img>
-<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/workflow/sap%20workflow%201.jpg" alt="SAP Workflow Approval Process" width="45%"></img>
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/workflow/sap%20workflow%202.jpg" alt="SAP Workflow Approval Process" width="50%" height="50%"></img>
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/workflow/sap%20workflow%201.jpg" alt="SAP Workflow Approval Process" width="50%" height="50%"></img>
 <p> SAP Workflow Approval Process</p>
-<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form.jpg" alt="PO Form in PDF" width="45%"></img>
-<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form%202.jpg" alt="PO Form in PDF" width="45%"></img>
-<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form%203.jpg" alt="PO Form in PDF" width="45%"></img>
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form.jpg" alt="PO Form in PDF" width="50%" height="50%"></img>
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form%202.jpg" alt="PO Form in PDF" width="50%" height="50%"></img>
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form%203.jpg" alt="PO Form in PDF" width="50%" height="50%"></img>
 <p> PO Form in PDF</p>
-<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/gr_report/gr%201.jpg" alt="GR Report in Excel" width="45%"></img>
-<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/gr_report/gr%202.jpg" alt="GR Report in Excel" width="45%"></img>
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/gr_report/gr%201.jpg" alt="GR Report in Excel" width="50%" height="50%"></img>
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/gr_report/gr%202.jpg" alt="GR Report in Excel" width="50%" height="50%"></img>
 <p> Goods Receiving (GR) Report in Excel</p>
 </div>
 
