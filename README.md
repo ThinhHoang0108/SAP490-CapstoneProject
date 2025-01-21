@@ -46,11 +46,7 @@ SAP490-CapstoneProject/
 
 
 ### **2️⃣ Goods Receiving (GR) Report - Excel Output with OLE Object**  
-#### **Personal Tasks:**
-- View and print the GR report with Excel.  
-- Check user plant authorize access to ensure they can only view reports for their assigned.  
-- Automatically suggests the plants the user can access.  
-- Document Reversal: When a document is canceled, it will not be included in the GR report.  
+#### **Personal Tasks:** 
 🔹 Generates **Excel-based GR reports** for better usability and flexibility.  
 🔹 Uses **OLE Object in ABAP** to format and export reports dynamically.  
 🔹 Ensures **user-based authorization**, restricting access based on plant assignments.  
