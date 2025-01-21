@@ -67,7 +67,7 @@ SAP490-CapstoneProject/
 ## **🖼️ Preview Screenshots**  
 
 <div align="center">
-<img src="[https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/workflow.png](https://drive.google.com/file/d/1SpDI1hDuTw7i4v2yyy7e9c5zDgjL2mdQ/view?usp=drive_link)" alt="SAP Workflow Approval Process" width="55%"></img>  &nbsp;&nbsp; 
+<img src="https://drive.google.com/file/d/1SpDI1hDuTw7i4v2yyy7e9c5zDgjL2mdQ/view?usp=drive_link" alt="SAP Workflow Approval Process" width="55%"></img>  &nbsp;&nbsp; 
 <p> SAP Workflow Approval Process</p>
 <img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="PO Form in PDF" width="55%"></img>  
 <p> PO Form in PDF</p>
