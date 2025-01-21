@@ -101,11 +101,15 @@ SAP490-CapstoneProject/
 ✅ Approve purchase orders via **SAP Workflow** (2-level)  
 ✅ Generate **Excel-based GR reports** with user-specific data  
 ✅ Print **PO forms as PDFs** using SmartForms  
+✅ Authorization access to ensure user account can only view goods receipt reports, purchasing order for their plant assigned.
 
 ### **2️⃣ SAP Administrators**  
 ✅ Configure & manage **SAP Workflow processes**  
 ✅ Set up **OLE automation for Excel reporting**  
 ✅ Customize & deploy **SmartForms for PO printing**  
+✅ Authorization access to ensure admin account can view all reports.
+
+
 
 ---
 
