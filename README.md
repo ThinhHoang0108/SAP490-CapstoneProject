@@ -44,8 +44,9 @@ SAP490-CapstoneProject/
 🔹 Reduces manual intervention and ensures compliance with company policies.  
 🔹 Implemented using **SAP Business Workflow (SWDD)**.  
 
-#### **Personal Tasks:**
+
 ### **2️⃣ Goods Receiving (GR) Report - Excel Output with OLE Object**  
+#### **Personal Tasks:**
 - View and print the GR report with Excel.  
 - Check user plant authorize access to ensure they can only view reports for their assigned.  
 - Automatically suggests the plants the user can access.  
