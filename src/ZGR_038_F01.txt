@@ -1,0 +1,848 @@
+*&---------------------------------------------------------------------*
+*& Include          ZGR_038_F01
+*&---------------------------------------------------------------------*
+FORM get_report_data CHANGING pv_return TYPE abap_bool.
+  pv_return = abap_true.
+  TYPES: BEGIN OF ty_werks,
+           werks TYPE mseg-werks,
+         END OF ty_werks.
+  DATA: lr_plant          TYPE RANGE OF mseg-werks,
+        lrl_plant         LIKE LINE OF lr_plant,
+        lt_no_author      TYPE TABLE OF ty_werks,       " Danh sách plant không có quyền
+        ls_werks          LIKE LINE OF lt_no_author,
+        lr_plant_join     TYPE RANGE OF mseg-werks,
+        lv_no_auth_plants TYPE string,
+        lv_auth_plants    TYPE string,
+        lv_message_shown  TYPE abap_bool VALUE abap_false.       " Range dùng cho câu SELECT
+
+
+  CLEAR: lr_plant.
+
+* B1: Kiem tra quyen user dua tren role 'ZZMM_RF_PLANT_1000'
+  SELECT agr_name
+    INTO TABLE @DATA(lt_roles_1)
+    FROM agr_users
+    WHERE agr_users~uname = @sy-uname.
+
+  IF lt_roles_1 IS INITIAL.
+    MESSAGE 'You do not have role to access any plant(s).' TYPE 'I' DISPLAY LIKE 'E'.
+    EXIT.
+  ENDIF.
+
+* B2: Lay plant ma nguoi dung duoc phan quyen
+
+  SELECT DISTINCT agr_1252~low, agr_1252~high
+    INTO TABLE @DATA(lt_plants)
+    FROM agr_1252
+    INNER JOIN agr_1251 ON agr_1252~agr_name = agr_1251~agr_name
+    FOR ALL ENTRIES IN @lt_roles_1
+    WHERE agr_1252~agr_name = @lt_roles_1-agr_name
+      AND agr_1251~object = 'M_MSEG_WMB'
+      AND agr_1252~varbl = '$WERKS'.
+
+  IF lt_plants IS INITIAL.
+    MESSAGE 'No authorized plants found for your role.' TYPE 'I' DISPLAY LIKE 'E'.
+    pv_return = abap_false.
+  ENDIF.
+
+* Chuyển dạng lt_plants thành range
+  LOOP AT lt_plants INTO DATA(ls_plant).
+    IF ls_plant-high IS NOT INITIAL.
+      lrl_plant = VALUE #( sign = 'I' option = 'BT' low = ls_plant-low high = ls_plant-high ).
+    ELSE.
+      lrl_plant = VALUE #( sign = 'I' option = 'EQ' low = ls_plant-low ).
+    ENDIF.
+    APPEND lrl_plant TO lr_plant.
+  ENDLOOP.
+* B3: Check xem plant nguoi dung nhap tren sel screen co match voi plant phan quyen hay khong?
+  IF s_werks[] IS INITIAL.
+    IF '*' IN lr_plant.
+      lr_plant_join = s_werks[].
+    ELSE.
+      lr_plant_join = lr_plant[].
+      READ TABLE lr_plant INTO lrl_plant INDEX 1.
+      MESSAGE |You are only authorized to view Plant { lrl_plant-low }| TYPE 'I'.
+    ENDIF.
+  ELSE.
+    IF '*' IN lr_plant.
+      lr_plant_join = s_werks[].
+    ELSE.
+      LOOP AT s_werks INTO DATA(lrl_werks).
+        IF lrl_werks-sign = 'I'.
+          IF lrl_werks-low IN lr_plant.
+            lrl_plant-low = lrl_werks-low.
+            APPEND lrl_plant TO lr_plant_join.
+          ELSE.
+            ls_werks-werks = lrl_werks-low.
+            APPEND ls_werks TO lt_no_author.
+          ENDIF.
+        ELSEIF lrl_werks-sign = 'E'.
+          IF lrl_werks-option = 'EQ'.
+            IF lrl_werks-low IN lr_plant.
+              DELETE lr_plant WHERE low = lrl_werks-low.
+            ELSE.
+              lr_plant_join = lr_plant[].
+              READ TABLE lr_plant INTO lrl_plant INDEX 1.
+            ENDIF.
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
+*      IF lrl_werks-low NOT IN lr_plant.
+*        MESSAGE |You are only authorized to view Plant { lrl_plant-low }| TYPE 'I'.
+*        lv_message_shown =
+*      ENDIF.
+      IF lr_plant IS INITIAL.
+        MESSAGE 'No plants found after exclude or no plants selected.' TYPE 'I' DISPLAY LIKE 'E'.
+        pv_return = abap_false.
+      ENDIF.
+      " Nếu có plant không hợp lệ, hiển thị thông báo danh sách và tiếp tục xử lý
+      IF lt_no_author IS NOT INITIAL.
+        IF lr_plant_join IS INITIAL.
+          MESSAGE 'No authorized plants found based on your input.' TYPE 'I' DISPLAY LIKE 'E'.
+          pv_return = abap_false.
+        ELSE.
+          LOOP AT lt_no_author INTO ls_werks.
+            IF lv_no_auth_plants IS INITIAL.
+              lv_no_auth_plants = ls_werks-werks.
+            ELSE.
+              CONCATENATE lv_no_auth_plants ', ' ls_werks-werks INTO lv_no_auth_plants.
+            ENDIF.
+          ENDLOOP.
+          MESSAGE |You do not have permission to access the following plants: { lv_no_auth_plants }. Only authorized plants will be displayed.| TYPE 'I'.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+  ENDIF.
+
+*Header section
+  SELECT SINGLE bukrs butxt ort01 land1
+  INTO (gs_header_data-bukrs, gs_header_data-butxt, gs_header_data-ort01, gs_header_data-land1)
+  FROM t001 WHERE bukrs = 'DE00'.
+
+  SELECT SINGLE landx
+    INTO gs_header_data-landx
+    FROM t005t WHERE spras = 'E' AND land1 = gs_header_data-land1.
+
+  SELECT SINGLE street post_code1 tel_number
+    INTO (gs_header_data-street, gs_header_data-post_code1, gs_header_data-tel_number)
+    FROM adrc WHERE addrnumber = '0000023779'.
+
+  IF s_lgort IS NOT INITIAL.
+    gs_header_data-lgort = s_lgort-low.
+  ENDIF.
+  gs_header_data-bedat_from = s_bedat-low.
+  gs_header_data-bedat_to = s_bedat-high.
+
+*table section
+  SELECT mseg~mblnr, mseg~zeile, mseg~werks, mseg~lgort, mseg~charg, mseg~menge,
+    mseg~meins, mseg~vbeln_im, mseg~vbelp_im, mseg~ebeln,
+    ekko~bedat, ekko~ernam, ekpo~ebelp, mseg~matnr, ekpo~txz01,
+    eket~menge AS bstmg, eket~wemng, ekpo~meins AS bstme
+  INTO TABLE @DATA(lt_output_1)
+  FROM mseg
+    INNER JOIN ekko ON mseg~ebeln = ekko~ebeln
+    INNER JOIN ekpo ON mseg~ebeln = ekpo~ebeln AND mseg~ebelp = ekpo~ebelp
+    INNER JOIN eket ON mseg~ebeln = eket~ebeln AND mseg~ebelp = eket~ebelp
+  WHERE mseg~mblnr IN @s_mblnr
+    AND mseg~matnr IN @s_matnr
+    AND mseg~ebeln IN @s_ebeln
+    AND mseg~lgort IN @s_lgort
+    AND mseg~vbeln_im IN @s_vbeln
+    AND ekko~bedat IN @s_bedat
+    AND mseg~budat_mkpf IN @s_budat
+    AND mseg~bukrs = 'DE00'
+    AND mseg~werks IN @lr_plant_join
+    AND mseg~mblnr NOT IN (
+      SELECT DISTINCT mseg~mblnr
+      FROM mseg
+      INNER JOIN matdoc ON mseg~mblnr = matdoc~mblnr
+                      AND mseg~mjahr = matdoc~mjahr
+                      AND mseg~zeile = matdoc~zeile
+
+      WHERE ( matdoc~cancelled = 'X' OR matdoc~reversal_movement = 'X' )
+       AND mseg~ebeln IS NOT NULL
+      ).
+  LOOP AT lt_output_1 INTO DATA(ls_output_1).
+    MOVE-CORRESPONDING ls_output_1 TO gs_output.
+    gs_output-bedat = ls_output_1-bedat(4) && '-' && ls_output_1-bedat+4(2) && '-' && ls_output_1-bedat+6(2).
+    gs_output-open_po_qty = gs_output-bstmg - gs_output-wemng.
+    APPEND gs_output TO gt_output.
+  ENDLOOP.
+
+  IF gt_output IS INITIAL.
+    MESSAGE 'No data found. Please try again!' TYPE 'I' DISPLAY LIKE 'E'.
+    pv_return = abap_false.
+  ENDIF.
+ENDFORM.
+*Goi y plant
+FORM suggest_plant.
+  " Lấy danh sách các role của người dùng hiện tại từ bảng AGR_USERS
+  SELECT agr_name
+    INTO TABLE @DATA(lt_roles_1)
+    FROM agr_users
+    WHERE agr_users~uname = @sy-uname.
+
+  " Lấy các plant phân quyền cho người dùng từ bảng AGR_1252 dựa trên role
+  SELECT DISTINCT agr_1252~low, agr_1252~high
+   INTO TABLE @DATA(lt_plants)
+   FROM agr_1252
+   INNER JOIN agr_1251 ON agr_1252~agr_name = agr_1251~agr_name
+   FOR ALL ENTRIES IN @lt_roles_1
+   WHERE agr_1252~agr_name = @lt_roles_1-agr_name
+     AND agr_1251~object = 'M_MSEG_WMB'
+     AND agr_1252~varbl = '$WERKS'.
+
+  IF lt_plants IS NOT INITIAL AND lt_plants[ 1 ]-low <> '*' AND s_werks[] IS INITIAL .
+    CLEAR s_werks.
+    LOOP AT lt_plants INTO DATA(lv_plant).
+      s_werks-sign = 'I'.
+      s_werks-option = 'EQ'.
+      s_werks-low = lv_plant.
+      APPEND s_werks.
+    ENDLOOP.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Module  STATUS_9600  OUTPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE status_9600 OUTPUT.
+  SET PF-STATUS 'STATUS_9600'.
+  SET TITLEBAR 'TITLE_9600'.
+
+  PERFORM 9600_pbo.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_9600  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_9600 INPUT.
+  CASE ok_code.
+    WHEN 'SRT1'.
+      SORT gt_output BY mblnr ASCENDING.
+      PERFORM refresh_excel.
+    WHEN 'SRT2'.
+      SORT gt_output BY mblnr DESCENDING.
+      PERFORM refresh_excel.
+    WHEN 'SAVEAS'.
+      DATA: lv_file_name TYPE string,
+            lv_retcode   TYPE soi_ret_string.
+      lv_file_name = 'Test'.
+      go_document->save_as(
+        EXPORTING
+          file_name   = 'X'
+          no_flush    = 'X'
+          prompt_user = 'X'
+        IMPORTING
+          error       = go_error
+          retcode     = lv_retcode
+      ).
+      IF sy-subrc <> 0.
+        MESSAGE 'Save Failed'(t01) TYPE 'S'.
+      ENDIF.
+
+    WHEN OTHERS.
+  ENDCASE.
+
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Form  9600_PBO
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM 9600_pbo .
+  DATA: item_url(256), okcode(15), newname(40).
+
+  PERFORM init_object.
+
+  PERFORM get_template.
+
+
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_9600_E  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_9600_e INPUT.
+  LEAVE TO SCREEN 0.
+ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Form  INIT_OBJECT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM init_object .
+  IF gv_already_done IS INITIAL.
+    CALL METHOD c_oi_container_control_creator=>get_container_control
+      IMPORTING
+        control = go_control
+        error   = go_error.
+
+    CREATE OBJECT go_container
+      EXPORTING
+        container_name = 'CONTAINER'.
+
+
+    CALL METHOD go_control->init_control
+      EXPORTING
+        r3_application_name      = 'Good Receiving Report'  "#EC NOTEXT
+        inplace_enabled          = abap_true
+        inplace_scroll_documents = 'X'
+        parent                   = go_container
+        register_on_close_event  = 'X'
+        register_on_custom_event = 'X'
+        no_flush                 = 'X'
+      IMPORTING
+        error                    = go_error.
+
+    CALL METHOD go_control->get_document_proxy
+      EXPORTING
+        document_type  = 'EXCEL.SHEET'
+*       REGISTER_CONTAINER = 'X'
+      IMPORTING
+        document_proxy = go_document
+        error          = go_error.
+
+    gv_already_done = abap_true.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Form  GET_TEMPLATE
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM get_template .
+
+  DATA: lv_document_type(80),
+        lv_item_url(256),
+
+        lo_bds_document      TYPE REF TO cl_bds_document_set,
+
+        lt_doc_signature     TYPE sbdst_signature,
+        ls_doc_signature     LIKE LINE OF lt_doc_signature,
+
+        lt_doc_components    TYPE sbdst_components,
+
+        lt_doc_uris          TYPE sbdst_uri,
+        ls_doc_uris          LIKE LINE OF lt_doc_uris,
+
+        lv_has               TYPE i
+        .
+
+  ls_doc_signature-prop_name = 'DESCRIPTION'.
+  ls_doc_signature-prop_value = 'TMP'.
+  APPEND ls_doc_signature TO lt_doc_signature.
+
+  CREATE OBJECT lo_bds_document.
+
+  CALL METHOD lo_bds_document->get_info
+    EXPORTING
+      classname  = c_doc_classname  " 'SOFFICEINTEGRATION'
+      classtype  = c_doc_classtype  " 'OT'
+      object_key = c_doc_object_key " 'SOFFICEINTEGRATION'
+    CHANGING
+      components = lt_doc_components
+      signature  = lt_doc_signature.
+
+  CALL METHOD lo_bds_document->get_with_url
+    EXPORTING
+      classname  = c_doc_classname  " 'SOFFICEINTEGRATION'
+      classtype  = c_doc_classtype  " 'OT'
+      object_key = c_doc_object_key " 'SOFFICEINTEGRATION'
+    CHANGING
+      uris       = lt_doc_uris
+      signature  = lt_doc_signature.
+
+  FREE lo_bds_document.
+
+  READ TABLE lt_doc_uris INTO ls_doc_uris INDEX 1.
+  lv_item_url = ls_doc_uris-uri.
+
+  CALL METHOD go_document->open_document
+    EXPORTING
+      open_inplace = abap_true
+      document_url = lv_item_url.
+
+  CALL METHOD go_document->has_spreadsheet_interface
+    IMPORTING
+      is_available = lv_has.
+
+  IF NOT lv_has IS INITIAL. " INITIAL = 1
+    CALL METHOD go_document->get_spreadsheet_interface
+      IMPORTING
+        sheet_interface = go_handle.
+
+    IF gv_is_first IS INITIAL.
+*      PERFORM first_set.
+      PERFORM get_data_tmp.
+      gv_is_first = 'X'.
+    ENDIF.
+  ENDIF.
+
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*&      Form  GET_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM get_data_tmp .
+  DATA: lt_gen         TYPE soi_generic_table,
+        ls_gen         TYPE soi_generic_item,
+        lt_range       TYPE soi_range_list,
+        ls_range       TYPE soi_range_item,
+        lv_row         TYPE i,
+        lv_col         TYPE i,
+        lv_ret         TYPE soi_ret_string,
+        lv_end_row     TYPE string,
+        lv_range       TYPE string,
+        lv_current_doc TYPE mseg-mblnr,
+        lv_doc_no      TYPE i VALUE 1.
+
+  CLEAR: lv_row, lv_col.
+  " Loop through each row of the output data and prepare for inserting to Excel
+  LOOP AT gt_output INTO gs_output.
+    lv_col = 0.
+    lv_row = lv_row + 1.
+*IF lv_current_doc IS INITIAL OR lv_current_doc <> gs_output-mblnr.
+*      lv_current_doc = gs_output-mblnr.
+*      lv_doc_no = lv_row. " Đặt Document No là row đầu tiên của nhóm
+*      lv_row = lv_row + 1.
+*    ENDIF.
+    " Document No - Use row number as Document No
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = lv_row. " Document No is the row number
+    APPEND ls_gen TO lt_gen.
+
+    " Material Document
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-mblnr.
+    APPEND ls_gen TO lt_gen.
+
+    " Material Document Item
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-zeile.
+    APPEND ls_gen TO lt_gen.
+
+    " Plant
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-werks.
+    APPEND ls_gen TO lt_gen.
+
+    " Storage Location
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-lgort.
+    APPEND ls_gen TO lt_gen.
+
+    " Batch
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-charg.
+    APPEND ls_gen TO lt_gen.
+
+    " Quantity in Unit of Entry
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-menge.
+    APPEND ls_gen TO lt_gen.
+
+    " Unit of Entry
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-meins.
+    APPEND ls_gen TO lt_gen.
+
+    " Inbound Delivery
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-vbeln_im.
+    APPEND ls_gen TO lt_gen.
+
+    " Inbound Delivery Item
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-vbelp_im.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-ebeln.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order Date
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-bedat.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order Creator
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-ernam.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order Item
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-ebelp.
+    APPEND ls_gen TO lt_gen.
+
+    " Material
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-matnr.
+    APPEND ls_gen TO lt_gen.
+
+    " Material Description
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-txz01.
+    APPEND ls_gen TO lt_gen.
+
+    " PO Quantity
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-bstmg.
+    APPEND ls_gen TO lt_gen.
+
+    " Order Unit
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-bstme.
+    APPEND ls_gen TO lt_gen.
+
+    " Open PO Quantity
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-open_po_qty.
+    APPEND ls_gen TO lt_gen.
+  ENDLOOP.
+  " Set up the range in the Excel template to start from A11
+  ls_range-name = 'range1'. " Specify the name of the range in the template
+  ls_range-rows = lines( gt_output ).
+  ls_range-columns = 19. " Corresponds to the 18 columns in the Excel template (excluding Document No)
+  ls_range-code = '1'.
+  APPEND ls_range TO lt_range.
+
+  CALL METHOD go_handle->insert_range_dim
+    EXPORTING
+      name    = 'range1'
+      top     = 15
+      left    = 2
+      rows    = lines( gt_output )
+      columns = 19.
+  " Insert the data into the Excel spreadsheet
+  CALL METHOD go_handle->set_ranges_data
+    EXPORTING
+      ranges   = lt_range
+      contents = lt_gen.
+  " Thiết lập viền cho từng ô trong phạm vi từ A11 đến cuối bảng
+*  CALL METHOD go_handle->set_cell_border
+*  EXPORTING
+*    ranges      = lt_border
+*    border_type = 'thin'        " Thiết lập loại viền (ví dụ: thin, thick)
+*    border_side = 'all'.        " Thêm viền vào tất cả các cạnh (trên, dưới, trái, phải)
+**********************************************************************
+  DATA: lv_formatted_date TYPE string,
+        bedat_from_fmt    TYPE string,
+        bedat_to_fmt      TYPE string,
+        bedat_from_to_fmt TYPE string.
+  DATA: lv_street       TYPE string,
+        lv_city         TYPE string,
+        lv_landx        TYPE string,
+        lv_post_code    TYPE string,
+        lv_tel_number   TYPE string,
+        lv_full_address TYPE string.
+
+* Chuyển các trường thành chuỗi
+  lv_street = gs_header_data-street.
+  lv_city = gs_header_data-ort01.
+  lv_landx = gs_header_data-landx.
+  lv_post_code = gs_header_data-post_code1.
+  lv_tel_number = gs_header_data-tel_number.
+
+  bedat_to_fmt = gs_header_data-bedat_to+6(2) && '-' && gs_header_data-bedat_to+4(2) && '-' && gs_header_data-bedat_to(4).
+  bedat_from_fmt = gs_header_data-bedat_from+6(2) && '-' && gs_header_data-bedat_from+4(2) && '-' && gs_header_data-bedat_from(4).
+  lv_formatted_date = sy-datum+6(2) && '-' && sy-datum+4(2) && '-' && sy-datum(4).
+  CONCATENATE bedat_from_fmt 'to' bedat_to_fmt INTO bedat_from_to_fmt SEPARATED BY space.
+
+*  PERFORM set_cell_value USING 'company_name' 3 3 gs_header_data-butxt.
+  PERFORM set_cell_value USING 'street' 4 4 lv_street.
+  PERFORM set_cell_value USING 'city' 5 4 lv_city.
+  PERFORM set_cell_value USING 'landx' 6 4 lv_landx.
+  PERFORM set_cell_value USING 'post_code' 7 3 lv_post_code.
+  PERFORM set_cell_value USING 'tel_number' 8 3 lv_tel_number.
+*  PERFORM set_cell_value USING 'storage_location' 10 12 gsgs_header_data-lgort.
+
+  IF s_bedat-high IS NOT INITIAL.
+    PERFORM set_cell_value USING 'purchasing_date_from' 11 12 bedat_from_to_fmt.
+  ELSE.
+    PERFORM set_cell_value USING 'purchasing_date_from' 11 12 bedat_from_fmt.
+  ENDIF.
+  PERFORM set_cell_value USING 'printed_date' 3 17 lv_formatted_date.
+  PERFORM set_cell_value USING 'username' 4 17 sy-uname.
+ENDFORM.
+
+FORM set_cell_value USING pv_name
+                          pv_row
+                          pv_col
+                          pv_value.
+  DATA: lt_gen   TYPE soi_generic_table,
+        ls_gen   TYPE soi_generic_item,
+        lt_range TYPE soi_range_list,
+        ls_range TYPE soi_range_item,
+        lv_row   TYPE i,
+        lv_col   TYPE i,
+        lv_ret   TYPE soi_ret_string
+        .
+  FIELD-SYMBOLS: <fs_gen> TYPE soi_generic_item.
+  CALL METHOD go_handle->insert_range_dim
+    EXPORTING
+      name    = pv_name
+      top     = pv_row
+      left    = pv_col
+      rows    = 1
+      columns = 1.
+  CLEAR: lt_gen, lt_range.
+  ls_range-name = pv_name.
+  ls_range-rows = 1.
+  ls_range-columns = 1.
+  ls_range-code = '1'.
+  APPEND ls_range TO lt_range.
+  CALL METHOD go_handle->get_ranges_data
+    IMPORTING
+      contents = lt_gen                 " Contents of the Tables
+      error    = go_error
+      retcode  = lv_ret
+    CHANGING
+      ranges   = lt_range.                 " Specified Ranges
+  IF lt_gen[] IS INITIAL.
+    MESSAGE lv_ret TYPE 'S'.
+    RETURN.
+  ENDIF.
+  ASSIGN lt_gen[ 1 ] TO <fs_gen>.
+  <fs_gen>-value = <fs_gen>-value && | | && pv_value.
+  CALL METHOD go_handle->set_ranges_data
+    EXPORTING
+      ranges   = lt_range
+      contents = lt_gen.
+ENDFORM.
+
+FORM refresh_excel.
+  DATA: lt_gen         TYPE soi_generic_table,
+        ls_gen         TYPE soi_generic_item,
+        lt_range       TYPE soi_range_list,
+        ls_range       TYPE soi_range_item,
+        lv_row         TYPE i,
+        lv_col         TYPE i,
+        lv_ret         TYPE soi_ret_string,
+        lv_end_row     TYPE string,
+        lv_range       TYPE string,
+        lv_current_doc TYPE mseg-mblnr,
+        lv_doc_no      TYPE i VALUE 1.
+
+  CLEAR: lv_row, lv_col.
+  " Loop through each row of the output data and prepare for inserting to Excel
+  LOOP AT gt_output INTO gs_output.
+    lv_col = 0.
+    lv_row = lv_row + 1.
+*IF lv_current_doc IS INITIAL OR lv_current_doc <> gs_output-mblnr.
+*      lv_current_doc = gs_output-mblnr.
+*      lv_doc_no = lv_row. " Đặt Document No là row đầu tiên của nhóm
+*      lv_row = lv_row + 1.
+*    ENDIF.
+    " Document No - Use row number as Document No
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = lv_row. " Document No is the row number
+    APPEND ls_gen TO lt_gen.
+
+    " Material Document
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-mblnr.
+    APPEND ls_gen TO lt_gen.
+
+    " Material Document Item
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-zeile.
+    APPEND ls_gen TO lt_gen.
+
+    " Plant
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-werks.
+    APPEND ls_gen TO lt_gen.
+
+    " Storage Location
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-lgort.
+    APPEND ls_gen TO lt_gen.
+
+    " Batch
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-charg.
+    APPEND ls_gen TO lt_gen.
+
+    " Quantity in Unit of Entry
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-menge.
+    APPEND ls_gen TO lt_gen.
+
+    " Unit of Entry
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-meins.
+    APPEND ls_gen TO lt_gen.
+
+    " Inbound Delivery
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-vbeln_im.
+    APPEND ls_gen TO lt_gen.
+
+    " Inbound Delivery Item
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-vbelp_im.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-ebeln.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order Date
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-bedat.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order Creator
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-ernam.
+    APPEND ls_gen TO lt_gen.
+
+    " Purchase Order Item
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-ebelp.
+    APPEND ls_gen TO lt_gen.
+
+    " Material
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-matnr.
+    APPEND ls_gen TO lt_gen.
+
+    " Material Description
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-txz01.
+    APPEND ls_gen TO lt_gen.
+
+    " PO Quantity
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-bstmg.
+    APPEND ls_gen TO lt_gen.
+
+    " Order Unit
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-bstme.
+    APPEND ls_gen TO lt_gen.
+
+    " Open PO Quantity
+    lv_col = lv_col + 1.
+    ls_gen-row = lv_row.
+    ls_gen-column = lv_col.
+    ls_gen-value = gs_output-open_po_qty.
+    APPEND ls_gen TO lt_gen.
+  ENDLOOP.
+  " Set up the range in the Excel template to start from A11
+  ls_range-name = 'range1'. " Specify the name of the range in the template
+  ls_range-rows = lines( gt_output ).
+  ls_range-columns = 19. " Corresponds to the 18 columns in the Excel template (excluding Document No)
+  ls_range-code = '1'.
+  APPEND ls_range TO lt_range.
+
+  CALL METHOD go_handle->insert_range_dim
+    EXPORTING
+      name    = 'range1'
+      top     = 15
+      left    = 2
+      rows    = lines( gt_output )
+      columns = 19.
+  " Insert the data into the Excel spreadsheet
+  CALL METHOD go_handle->set_ranges_data
+    EXPORTING
+      ranges   = lt_range
+      contents = lt_gen.
+ENDFORM.

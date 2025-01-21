@@ -1,0 +1,40 @@
+*&---------------------------------------------------------------------*
+*& Report ZGR_038
+*&---------------------------------------------------------------------*
+*&
+*05-11-2024
+*GR report issue:
+*+ format template báo cáo theo file KDS
+*+ Xử lý case không input plant
+*+ authorization object
+*+ tham số PO date, posting date
+*+ logic reversal document
+*06-11-2024
+*GR report issue:
+*+ authorization object
+*+ logic reversal document
+*13-11-2024
+*GR report issue:
+*+ authorization object: Th1 nguoi dung ko nhap gi Th2 nguoi dung nhap gia tri
+*+ logic reversal document
+*20-11-2024
+*+ search authorize include range and equal
+*+ no data back to sel-screen
+*28-11-2024
+*+ progess success. no bug
+*&---------------------------------------------------------------------*
+REPORT zgr_038.
+INCLUDE zgr_038_top.
+INCLUDE zgr_038_f01.
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM suggest_plant.
+START-OF-SELECTION.
+  DATA lv_err_handel TYPE abap_bool.
+
+  PERFORM get_report_data CHANGING lv_err_handel.
+
+  IF lv_err_handel <> abap_false.
+    CALL SCREEN 9600.
+  ENDIF.
+
+END-OF-SELECTION.

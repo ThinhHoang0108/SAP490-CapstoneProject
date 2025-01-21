@@ -1,0 +1,74 @@
+*&---------------------------------------------------------------------*
+*& Include          ZGR_038_TOP
+*&---------------------------------------------------------------------*
+TABLES: ekko, ekpo, mseg, t001, lips,eket.
+* --- Type declaration for header report output ---
+TYPES: BEGIN OF ty_header_data,
+         bukrs      TYPE t001-bukrs,
+         butxt      TYPE t001-butxt,
+         street     TYPE adrc-street,
+         ort01      TYPE t001-ort01,
+         landx      TYPE t005t-landx,
+         post_code1 TYPE adrc-post_code1,
+         tel_number TYPE adrc-tel_number,
+         lgort      TYPE mseg-lgort,
+         audat      TYPE ekpo-audat,
+         budat      TYPE mseg-budat_mkpf,
+       END OF ty_header_data.
+
+* --- Type declaration for report output ---
+TYPES: BEGIN OF ty_output,
+         mblnr       TYPE mseg-mblnr,      " Material Document
+         zeile       TYPE mseg-zeile,      " Material Document Item
+         werks       TYPE mseg-werks,      " Plant
+         lgort       TYPE mseg-lgort,      " Storage Location
+         charg       TYPE mseg-charg,      " Batch
+         menge       TYPE mseg-menge,      " Quantity
+         meins       TYPE mseg-meins,      " Unit of Entry
+         vbeln_im    TYPE mseg-vbeln_im,   " Inbound Delivery
+         vbelp_im    TYPE mseg-vbelp_im,   " Inbound Delivery
+         ebeln       TYPE mseg-ebeln,      " Purchase Order
+*         bedat       TYPE ekko-bedat,      " Purchase Order Date
+         bedat       TYPE string,      " Purchase Order Date
+         ernam       TYPE ekko-ernam,      " Purchase Order Creator
+         ebelp       TYPE ekpo-ebelp,      " Purchase Order Item
+         matnr       TYPE mseg-matnr,      " Material
+         txz01       TYPE ekpo-txz01,      " Material Description
+         bstmg       TYPE eket-menge,      " Ordered Quantity from EKET
+         wemng       TYPE eket-wemng,      " Goods Received Quantity from EKET
+         bstme       TYPE ekpo-meins,      " Order Unit
+         open_po_qty TYPE eket-menge,      " Open PO Quantity
+       END OF ty_output.
+*TYPES: BEGIN OF ty_data1,
+*         ebeln TYPE mseg-ebeln,
+*       END OF ty_data1.
+*DATA: lt_data1 TYPE TABLE OF ty_data1.
+DATA: gt_output      TYPE TABLE OF ty_output,
+      gs_output      TYPE ty_output,
+      gs_header_data TYPE zheader_data,
+      gv_fm_name     TYPE rs38l_fnam.
+DATA: c_doc_classname  TYPE sbdst_classname VALUE 'SOFFICEINTEGRATION',
+      c_doc_classtype  TYPE sbdst_classtype VALUE 'OT',
+      c_doc_object_key TYPE sbdst_object_key VALUE 'SOFFICEINTEGRATION'.
+DATA: gv_already_done TYPE abap_bool,
+      go_control      TYPE REF TO i_oi_container_control,
+      go_error        TYPE REF TO i_oi_error,
+      go_document     TYPE REF TO i_oi_document_proxy,
+      go_handle       TYPE REF TO i_oi_spreadsheet,
+      go_container    TYPE REF TO cl_gui_custom_container,
+      gv_is_first     TYPE abap_bool,
+      ok_code         TYPE sy-ucomm.
+* --- ALV Output ---
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
+
+  SELECT-OPTIONS :
+    s_werks FOR mseg-werks NO INTERVALS,    " Plant
+    s_lgort FOR mseg-lgort,    " Storage Location
+    s_mblnr FOR mseg-mblnr,    " Material document
+    s_matnr FOR mseg-matnr,    " Material
+    s_ebeln FOR mseg-ebeln,    " Purchasing document
+    s_vbeln FOR lips-vbeln,    " Delivery number
+    s_bedat FOR ekko-bedat OBLIGATORY NO-EXTENSION,    " Purchasing document date OBLIGATORY
+    s_budat FOR mseg-budat_mkpf.    " Posting Date
+
+SELECTION-SCREEN END OF BLOCK b1.
