@@ -44,12 +44,17 @@ SAP490-CapstoneProject/
 🔹 Reduces manual intervention and ensures compliance with company policies.  
 🔹 Implemented using **SAP Business Workflow (SWDD)**.  
 
+#### **Personal Tasks:**
 ### **2️⃣ Goods Receiving (GR) Report - Excel Output with OLE Object**  
+- View and print the GR report with Excel.  
+- Check user plant authorize access to ensure they can only view reports for their assigned.  
+- Automatically suggests the plants the user can access.  
+- Document Reversal: When a document is canceled, it will not be included in the GR report.  
 🔹 Generates **Excel-based GR reports** for better usability and flexibility.  
 🔹 Uses **OLE Object in ABAP** to format and export reports dynamically.  
 🔹 Ensures **user-based authorization**, restricting access based on plant assignments.  
 🔹 Implements **automatic plant suggestion** based on user roles.  
-🔹 **Document Reversal Handling**: Excludes canceled documents from reports.  
+🔹 **Document Reversal Handling**: Excludes canceled documents from reports. 
 
 ### **3️⃣ Purchase Order (PO) Form - SmartForms PDF Output**  
 🔹 Custom **SmartForms layout** for printing purchase orders.  
