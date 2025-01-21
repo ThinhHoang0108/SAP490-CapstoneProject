@@ -68,10 +68,10 @@ SAP490-CapstoneProject/
 
 <div align="center">
 
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/workflow.png" alt="SAP Workflow Approval Process" width="45%"></img> &nbsp;&nbsp; <img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="GR Report in Excel" width="45%"></img>
-
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/po_form_pdf.png" alt="PO Form in SmartForms PDF" width="45%"></img>
-
+1. *SAP Workflow*. <img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/workflow.png" alt="SAP Workflow Approval Process" width="45%"></img>
+2. *Goods Receiving (GR) Report* <img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="GR Report in Excel" width="45%"></img>
+3. *Purchase Order (PO) Form*  <img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/po_form_pdf.png" alt="PO Form in SmartForms PDF" width="45%"></img>
+ &nbsp;&nbsp; 
 </div>
 
 ---
