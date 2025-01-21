@@ -67,11 +67,11 @@ SAP490-CapstoneProject/
 ## **🖼️ Preview Screenshots**  
 
 <div align="center">
-<img src="https://drive.google.com/file/d/1SpDI1hDuTw7i4v2yyy7e9c5zDgjL2mdQ/view?usp=drive_link" alt="SAP Workflow Approval Process" width="55%"></img>  &nbsp;&nbsp; 
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/workflow/sap%20workflow%201.jpg" alt="SAP Workflow Approval Process" width="55%"></img>  &nbsp;&nbsp; <img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/workflow/sap%20workflow%202.jpg" alt="SAP Workflow Approval Process" width="55%"></img>
 <p> SAP Workflow Approval Process</p>
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="PO Form in PDF" width="55%"></img>  
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form.jpg" alt="PO Form in PDF" width="55%"></img>  &nbsp;&nbsp; <img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form%202.jpg" alt="PO Form in PDF" width="55%"></img> &nbsp;&nbsp; <img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/po_form/po%20form%203.jpg" alt="PO Form in PDF" width="55%"></img>
 <p> PO Form in PDF</p>
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="GR Report in Excel" width="55%"></img>  
+<img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/gr_report/gr%201.jpg" alt="GR Report in Excel" width="55%"></img>  &nbsp;&nbsp; <img src="https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/gr_report/gr%202.jpg" alt="GR Report in Excel" width="55%"></img>
 <p> Goods Receiving (GR) Report in Excel</p>
 </div>
 
