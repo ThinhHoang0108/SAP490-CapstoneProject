@@ -67,21 +67,12 @@ SAP490-CapstoneProject/
 ## **🖼️ Preview Screenshots**  
 
 <div align="center">
-
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/workflow.png" alt="SAP Workflow Approval Process" width="45%"></img>  
-<p><strong>Figure 1:</strong> SAP Workflow Approval Process</p>
-
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="GR Report in Excel" width="45%"></img>  
-<p><strong>Figure 2:</strong> Goods Receiving (GR) Report in Excel</p>
-
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/po_form_pdf.png" alt  
-
-<div align="center">
-
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/workflow.png" alt="SAP Workflow Approval Process" width="45%"></img> &nbsp;&nbsp; <img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="GR Report in Excel" width="45%"></img>
-
-<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/po_form_pdf.png" alt="PO Form in SmartForms PDF" width="45%"></img>
-
+<img src="[https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/workflow.png](https://drive.google.com/file/d/1SpDI1hDuTw7i4v2yyy7e9c5zDgjL2mdQ/view?usp=drive_link)" alt="SAP Workflow Approval Process" width="55%"></img>  &nbsp;&nbsp; 
+<p> SAP Workflow Approval Process</p>
+<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="PO Form in PDF" width="55%"></img>  
+<p> PO Form in PDF</p>
+<img src="https://github.com/yourusername/SAP490-CapstoneProject/blob/main/screenshots/gr_report_excel.png" alt="GR Report in Excel" width="55%"></img>  
+<p> Goods Receiving (GR) Report in Excel</p>
 </div>
 
 ---
