@@ -117,6 +117,6 @@ SAP490-CapstoneProject/
 | # | Name | Description |
 |---|------|------------|
 | 1 | [eSlide](https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/docs/SAP490-Global%20Pharma.pdf) | IntrodIntroduce to GR report structure and design. |
-| 2 | [Technial Specifications]([https://help.sap.com/viewer/ole](https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/docs/%5BSAP490-Group4%5DTS_GR%20Report_v1.0.xlsx)) | Technical blueprint Excel reports in SAP ABAP |
-| 3 | [Functional Specifications]([https://help.sap.com/viewer/smartforms](https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/docs/%5BSAP490-Group4%5DFunctional_Specification_GR%20Report_V1.0.xlsx)) | Detailed requirements and logic for GR report in SAP. |
+| 2 | [Technial Specifications](https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/docs/%5BSAP490-Group4%5DTS_GR%20Report_v1.0.xlsx) | Technical blueprint Excel reports in SAP ABAP |
+| 3 | [Functional Specifications](https://github.com/ThinhHoang0108/SAP490-CapstoneProject/blob/main/docs/%5BSAP490-Group4%5DFunctional_Specification_GR%20Report_V1.0.xlsx) | Detailed requirements and logic for GR report in SAP. |
 
