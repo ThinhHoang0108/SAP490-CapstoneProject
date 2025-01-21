@@ -2,19 +2,7 @@
 
 🚀 **Capstone Project - SAP ABAP Workflow, GR Report, and PO Form Customization**  
 
-## Table of Contents
-
-- [Description](#description)
-
-- [Preview Screenshot](#preview-screenshot)
-
-- [Technology](#technology)
-
-- [Functional requirements](#functional-requirements)
-
-- [Useful Resources](#useful-resources)
----
-📌 ## **Description:**  
+📌 **Description:**  
 This project focuses on **SAP ABAP development and customization**, specifically in:  
 1. **SAP Workflow** – Implementing a **2-level approval process** for purchase orders.  
 2. **Goods Receiving (GR) Report** – Generating **Excel-based reports** using **OLE Object**.  
