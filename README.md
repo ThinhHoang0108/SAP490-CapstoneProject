@@ -116,7 +116,7 @@ SAP490-CapstoneProject/
 
 | # | Name | Description |
 |---|------|------------|
-| 1 | [SAP Workflow Basics](https://help.sap.com) | Guide to implementing SAP Workflow |
+| 1 | [SAP Workflow Basics](docs/SAP490-Global Pharma.pdf) | Guide to implementing SAP Workflow |
 | 2 | [ABAP OLE Object](https://help.sap.com/viewer/ole) | Automating Excel reports in SAP ABAP |
 | 3 | [SmartForms in SAP](https://help.sap.com/viewer/smartforms) | Creating PDF output using SmartForms |
 
