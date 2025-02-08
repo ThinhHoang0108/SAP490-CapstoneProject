@@ -2,7 +2,7 @@
 
 🚀 **Capstone Project - SAP ABAP Workflow, GR Report, and PO Form Customization**.
 
-* Final Project Grade: 8.6/10
+
 
 📌 **Description:**  
 This project focuses on **SAP ABAP development and customization**, specifically in:  
@@ -23,7 +23,7 @@ The project enhances SAP ERP by **automating approvals, optimizing report genera
   - Nguyễn Lan Ngọc (HE160359)  
 
 **Project Duration:** September 2024 – December 2024  
-
+*Final Project Grade: 8.6/10*
 ---
 
 ## **📂 Repository Structure**  
