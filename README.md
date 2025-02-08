@@ -2,7 +2,7 @@
 
 🚀 **Capstone Project - SAP ABAP Workflow, GR Report, and PO Form Customization**.
 
-**Capstone Project Score: 8.6/10**
+* Final Project Grade: 8.6/10
 
 📌 **Description:**  
 This project focuses on **SAP ABAP development and customization**, specifically in:  
