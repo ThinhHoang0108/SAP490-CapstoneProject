@@ -1,6 +1,6 @@
 # **SAP490-CapstoneProject**  
 
-🚀 **Capstone Project - SAP ABAP Workflow, GR Report, and PO Form Customization**.
+## **🚀 Capstone Project - SAP ABAP Workflow, GR Report, and PO Form Customization**.
 
 **Project Duration:** September 2024 – December 2024
 
@@ -108,11 +108,12 @@ SAP490-CapstoneProject/
 - [x] Print **PO forms as PDFs** using SmartForms  
 - [x] Authorization access to ensure user account can only view goods receipt reports, purchasing order for their plant assigned.
 
-### **2️⃣ SAP Administrators**  
+### **2️⃣ SAP Developer**  
 - [x] Configure & manage **SAP Workflow processes**  
 - [x] Set up **OLE automation for Excel reporting**  
 - [x] Customize & deploy **SmartForms for PO printing**  
 - [x] Authorization access to ensure admin account can view all reports.
+- [ ] Deploy program to SAP UI5 via Odata API
 
 
 
