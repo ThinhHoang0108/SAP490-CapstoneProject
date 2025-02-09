@@ -1,6 +1,6 @@
-# **SAP490-CapstoneProject**  
 
-## **🚀 Capstone Project - SAP ABAP Workflow, GR Report, and PO Form Customization**.
+
+# **🚀 Capstone Project - SAP Workflow, Goods Receipt Report, and Purchase Order Form Customization**.
 
 **Project Duration:** September 2024 – December 2024
 
@@ -84,7 +84,9 @@ SAP490-CapstoneProject/
 ---
 
 ## **🛠 Technologies Used**  
+**Programing language:** SAP ABAP
 
+**IDE tool:** SAP GUI
 ### **1. SAP Workflow (PO Approval)**  
 🔹 **Transaction Codes:** SWDD, SWI1, PFTC  
 🔹 **Approval Logic:** Multi-level user authorization  
